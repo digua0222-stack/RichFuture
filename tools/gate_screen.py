@@ -101,9 +101,45 @@ def check(snap: dict, high_leverage: bool) -> dict:
     add(1, "预收款/合同负债（参考项）", PASS if cl else INSUF,
         {y: f"{v/1e8:.1f}亿" for y, v in cl.items()}, "越多越好")
 
+    # ---------- 第 2.5 道：永续性财务代理 ----------
+    gms = [years[y]["gross_margin"] for y in sorted(years) if years[y].get("gross_margin") is not None]
+    if len(gms) >= 3:
+        mean = sum(gms) / len(gms)
+        cv = (sum((g - mean) ** 2 for g in gms) / len(gms)) ** 0.5 / mean if mean else None
+        v = PASS if cv <= 0.08 else ("REVIEW" if cv <= 0.15 else FAIL)
+        add(2.5, "毛利率变异系数CV（稳定性）", v, f"CV={cv:.3f}（{len(gms)}年）", "<=0.08 / 0.08-0.15 / >0.15")
+    else:
+        add(2.5, "毛利率变异系数CV（稳定性）", INSUF, f"仅{len(gms)}年数据", "需>=3年")
+
+    drops = [(y, years[y]["rev_growth"]) for y in sorted(years)
+             if years[y].get("rev_growth") is not None and years[y]["rev_growth"] < 0]
+    worst = min((g for _, g in drops), default=None)
+    v = (FAIL if worst <= -0.30 else REVIEW if worst <= -0.10 else PASS) if worst is not None else PASS
+    add(2.5, "营收最大单年跌幅", v,
+        f"最大跌幅: {worst:.1%}" if worst is not None else "无负增长年份",
+        ">-10% PASS / -10%~-30% REVIEW / <=-30% FAIL")
+
+    rein = {}
+    for y in sorted(years):
+        cap, rd, rev = years[y].get("capex"), years[y].get("rd_expense"), years[y].get("revenue")
+        if rev and cap is not None:
+            rein[y] = (cap + (rd or 0)) / rev
+    if rein:
+        recent = list(rein.values())[-3:]
+        avg3 = sum(recent) / len(recent)
+        v = PASS if avg3 <= 0.10 else ("REVIEW" if avg3 <= 0.15 else FAIL)
+        add(2.5, "维持性再投入强度(capex+研发)/营收", v,
+            f"近3年均值={avg3:.1%}；各年: {{{', '.join(f'{y}:{v:.0%}' for y, v in rein.items())}}}",
+            "<=10% / 10-15% / >15%")
+    else:
+        add(2.5, "维持性再投入强度(capex+研发)/营收", INSUF, "无数据", "<=10%")
+
     n_fail = sum(1 for c in checks if c["verdict"] in (FAIL, INSUF))
     first_fail = next((c for c in checks if c["verdict"] in (FAIL, INSUF)), None)
+    reviews = [c for c in checks if c["verdict"] == "REVIEW"]
     verdict = "PASS_GATE01" if n_fail == 0 else f"REJECT@GATE{first_fail['gate']}"
+    if reviews:
+        verdict += f" | 永续性复核: {len(reviews)}项REVIEW"
     return {"ticker": snap["ticker"], "name": snap.get("name"), "verdict": verdict,
             "checks": checks, "source": snap.get("source"), "as_of": snap.get("as_of")}
 
@@ -130,7 +166,7 @@ def main():
 
     print(f"\n== {result['name']} ({result['ticker']}) 门禁结论: {result['verdict']} ==  [数据源: {result['source']}, {result['as_of']}]")
     for c in result["checks"]:
-        mark = {"PASS": "✅", "FAIL": "❌", "INSUFFICIENT": "⚠️ "}[c["verdict"]]
+        mark = {"PASS": "✅", "FAIL": "❌", "INSUFFICIENT": "⚠️ ", "REVIEW": "🔶"}[c["verdict"]]
         print(f"  [G{c['gate']}] {mark} {c['verdict']:<12} {c['item']:<28} | {c['detail']}")
     print(f"\n  (机器可读结果 -> {out})")
 

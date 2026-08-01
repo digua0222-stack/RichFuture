@@ -1,7 +1,7 @@
 {
   "ticker": "0700.HK",
   "name": "腾讯控股",
-  "verdict": "REJECT@GATE1",
+  "verdict": "REJECT@GATE1 | 永续性复核: 2项REVIEW",
   "checks": [
     {
       "gate": 0,
@@ -103,6 +103,27 @@
       "verdict": "INSUFFICIENT",
       "detail": {},
       "threshold": "越多越好"
+    },
+    {
+      "gate": 2.5,
+      "item": "毛利率变异系数CV（稳定性）",
+      "verdict": "REVIEW",
+      "detail": "CV=0.099（4年）",
+      "threshold": "<=0.08 / 0.08-0.15 / >0.15"
+    },
+    {
+      "gate": 2.5,
+      "item": "营收最大单年跌幅",
+      "verdict": "PASS",
+      "detail": "无负增长年份",
+      "threshold": "破位-30%即FAIL"
+    },
+    {
+      "gate": 2.5,
+      "item": "维持性再投入强度(capex+研发)/营收",
+      "verdict": "REVIEW",
+      "detail": "近3年均值=12.4%；各年: {2022:9%, 2023:8%, 2024:15%, 2025:15%}",
+      "threshold": "<=10% / 10-15% / >15%"
     }
   ],
   "source": "yahoo_finance",

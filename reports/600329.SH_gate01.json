@@ -1,7 +1,7 @@
 {
   "ticker": "600329.SH",
   "name": "达仁堂",
-  "verdict": "REJECT@GATE1",
+  "verdict": "REJECT@GATE1 | 永续性复核: 1项REVIEW",
   "checks": [
     {
       "gate": 0,
@@ -111,6 +111,27 @@
         "2024": "1.2亿"
       },
       "threshold": "越多越好"
+    },
+    {
+      "gate": 2.5,
+      "item": "毛利率变异系数CV（稳定性）",
+      "verdict": "PASS",
+      "detail": "CV=0.075（6年）",
+      "threshold": "<=0.08 / 0.08-0.15 / >0.15"
+    },
+    {
+      "gate": 2.5,
+      "item": "营收最大单年跌幅",
+      "verdict": "REVIEW",
+      "detail": "最大跌幅: -11.1%",
+      "threshold": "破位-30%即FAIL"
+    },
+    {
+      "gate": 2.5,
+      "item": "维持性再投入强度(capex+研发)/营收",
+      "verdict": "PASS",
+      "detail": "近3年均值=3.7%；各年: {2019:5%, 2020:5%, 2021:5%, 2022:3%, 2023:4%, 2024:4%}",
+      "threshold": "<=10% / 10-15% / >15%"
     }
   ],
   "source": "ifind",
