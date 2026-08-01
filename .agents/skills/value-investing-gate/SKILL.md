@@ -63,3 +63,4 @@ description: 价值投资股票分析门禁。基于巴菲特/芒格、段永平
 - [references/masters-criteria.md](references/masters-criteria.md)：四位大师的原始语录与指标依据，判断存疑时回查
 - [references/qualitative-jury.md](references/qualitative-jury.md)：第 2 道门 LLM 陪审团流程与反幻觉规则
 - [references/valuation.md](references/valuation.md)：第 3 道门毛估估估值方法
+- [references/data-contract.md](references/data-contract.md)：工程化工具流——数据源路由、快照 schema、批量穷举流程、数据陷阱。执行任何分析前先读此文件，用 `tools/` 下的现成脚本取数与判定，不要手工重造

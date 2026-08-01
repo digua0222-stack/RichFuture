@@ -1,0 +1,65 @@
+{
+  "ticker": "0700.HK",
+  "name": "腾讯控股",
+  "currency": "CNY",
+  "base_owner_earnings": 153014666667.0,
+  "base_source": "avg3 (2025=1779.9亿)",
+  "share_capital": 9001629075.0,
+  "assumptions": {
+    "g1": 0.08,
+    "g2": 0.05,
+    "gterm": 0.03,
+    "discount": 0.09,
+    "mos": 0.65
+  },
+  "intrinsic_value_total": 3479029706579.0,
+  "intrinsic_value_per_share": 386.49,
+  "sensitivity_per_share": {
+    "rows_discount": [
+      0.08,
+      0.09,
+      0.09999999999999999
+    ],
+    "cols_g1": [
+      0.06,
+      0.08,
+      0.1
+    ],
+    "grid": [
+      [
+        428.6,
+        467.32,
+        508.9
+      ],
+      [
+        354.93,
+        386.49,
+        420.36
+      ],
+      [
+        302.42,
+        328.89,
+        357.29
+      ]
+    ]
+  },
+  "iv_range_per_share": [
+    302.42,
+    508.9
+  ],
+  "listings": [
+    {
+      "ticker": "0700.HK",
+      "price": 475.200012207,
+      "price_ccy": "HKD",
+      "price_date": "2026-07-30T16:00:00.000Z",
+      "price_in_report_ccy": 408.81,
+      "price_vs_iv_low": 1.352,
+      "price_vs_iv_mid": 1.058,
+      "buy_threshold_mos": 251.22,
+      "undervalued_at_mos": false
+    }
+  ],
+  "verdict": "未达到安全边际",
+  "note": "区间下沿=折现率+1pp且g1-2pp；上沿=折现率-1pp且g1+2pp"
+}
