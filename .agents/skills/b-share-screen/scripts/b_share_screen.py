@@ -87,14 +87,26 @@ def fin_main_batch(report_date: str) -> dict:
     return out
 
 
-def dividends(code: str) -> list[dict]:
-    """分红记录（RPT_SHAREBONUS_DET，逐只）。"""
-    filt = urllib.parse.quote(f'(SECURITY_CODE="{code}")', safe="()")
-    url = (f"{DC}?sortColumns=NOTICE_DATE&sortTypes=-1&pageSize=40"
-           "&reportName=RPT_SHAREBONUS_DET"
-           "&columns=SECURITY_CODE,REPORT_DATE,IMPL_PLAN_PROFILE,PRETAX_BONUS_RMB"
-           f"&filter={filt}")
-    return ((get(url).get("result") or {}).get("data")) or []
+def dividends_batch(since: str = "2023-01-01") -> dict:
+    """按公告日期范围批量拉全市场分红 → {code: {财年: [方案描述]}}（B股本地筛）。
+    财年归属取 REPORT_DATE 年份（中期/年度/特别分红均归入所属财年）。"""
+    filt = urllib.parse.quote(f"(NOTICE_DATE>='{since}')", safe="()")
+    out, page, pages = {}, 1, 1
+    while page <= pages:
+        url = (f"{DC}?sortColumns=NOTICE_DATE&sortTypes=-1&pageSize=500&pageNumber={page}"
+               "&reportName=RPT_SHAREBONUS_DET"
+               "&columns=SECURITY_CODE,REPORT_DATE,IMPL_PLAN_PROFILE,PRETAX_BONUS_RMB,ASSIGN_PROGRESS"
+               f"&filter={filt}")
+        data = (get(url).get("result") or {})
+        pages = data.get("pages") or 1
+        for r in data.get("data") or []:
+            prof = r.get("IMPL_PLAN_PROFILE") or ""
+            ry = (r.get("REPORT_DATE") or "")[:4]
+            if ry and "派" in prof:
+                out.setdefault(r["SECURITY_CODE"], {}).setdefault(ry, []).append(prof)
+        page += 1
+        time.sleep(0.15)
+    return out
 
 
 def screen(years: list[str]) -> str:
@@ -112,21 +124,18 @@ def screen(years: list[str]) -> str:
             fin_by_year[y] = {}
         time.sleep(0.3)
 
+    # 分红：按公告日期批量（约 36 页）
+    try:
+        div_by_code = dividends_batch(since=f"{years[0]}-01-01")
+    except Exception as e:
+        print(f"# WARN 分红批量: {e}", file=sys.stderr)
+        div_by_code = {}
+
     passed, edge, rej_fin, rej_div = [], [], [], []
     for s in shares:
         code = s["code"]
-        try:
-            time.sleep(0.15)
-            divs = dividends(code)
-        except Exception as e:
-            print(f"# WARN {code} {s['name']}: {e}", file=sys.stderr)
-            continue
-        div_years = set()
-        for d in divs:
-            prof = d.get("IMPL_PLAN_PROFILE") or ""
-            ry = (d.get("REPORT_DATE") or "")[:4]
-            if ry and "派" in prof:
-                div_years.add(ry)
+        div_rec = div_by_code.get(code) or {}
+        div_years = set(div_rec)
         jll = {y: (fin_by_year[y].get(code) or {}).get("XSJLL") for y in years}
         zfz = {y: (fin_by_year[y].get(code) or {}).get("ZCFZL") for y in years}
         has_all = all(v is not None for v in jll.values()) and all(v is not None for v in zfz.values())
@@ -138,8 +147,9 @@ def screen(years: list[str]) -> str:
             continue
         latest_jll, latest_zfz = jll[years[-1]], zfz[years[-1]]
         ever_breach = any(v < 10 for v in jll.values()) or any(v > 50 for v in zfz.values())
+        div_latest = "；".join(div_rec.get(years[-1], []))[:60]
         if latest_jll >= 10 and latest_zfz <= 50:
-            (edge if ever_breach else passed).append((s, jll, zfz))
+            (edge if ever_breach else passed).append((s, jll, zfz, div_latest))
         else:
             rej_fin.append((s, jll, zfz, "最新年破线" if not ever_breach else "多年破线"))
 
@@ -149,11 +159,11 @@ def screen(years: list[str]) -> str:
     L = [f"# B股三步筛选结果（财年窗口 {'/'.join(years)}）",
          f"\n扫描 {len(shares)} 只 B 股 → 通过 {len(passed)} + 边缘 {len(edge)}；"
          f"剔除：财务 {len(rej_fin)}、分红 {len(rej_div)}\n",
-         "## 通过名单\n", "| 标的 | 代码 | 净利率 | 负债率 | 判定 |", "|---|---|---|---|---|"]
-    for s, jll, zfz in passed:
-        L.append(f"| {s['name']} | {s['code']}.{s['mkt']} | {fmt3(jll)} | {fmt3(zfz)} | ✅ 通过 |")
-    for s, jll, zfz in edge:
-        L.append(f"| {s['name']} | {s['code']}.{s['mkt']} | {fmt3(jll)} | {fmt3(zfz)} | ⚠️ 边缘（近年有破线） |")
+         "## 通过名单\n", "| 标的 | 代码 | 净利率 | 负债率 | 最新财年分红方案 | 判定 |", "|---|---|---|---|---|---|"]
+    for s, jll, zfz, dv in passed:
+        L.append(f"| {s['name']} | {s['code']}.{s['mkt']} | {fmt3(jll)} | {fmt3(zfz)} | {dv} | ✅ 通过 |")
+    for s, jll, zfz, dv in edge:
+        L.append(f"| {s['name']} | {s['code']}.{s['mkt']} | {fmt3(jll)} | {fmt3(zfz)} | {dv} | ⚠️ 边缘（近年有破线） |")
     L += ["\n## 剔除A：分红达标但财务不达标\n", "| 标的 | 代码 | 净利率 | 负债率 | 原因 |", "|---|---|---|---|---|"]
     for s, jll, zfz, why in rej_fin:
         L.append(f"| {s['name']} | {s['code']}.{s['mkt']} | {fmt3(jll)} | {fmt3(zfz)} | {why} |")
