@@ -1,0 +1,65 @@
+{
+  "ticker": "600519.SH",
+  "name": "贵州茅台",
+  "currency": "CNY",
+  "base_owner_earnings": 72245322601.0,
+  "base_source": "avg3 (2024=836.1亿)",
+  "share_capital": 1250081601.0,
+  "assumptions": {
+    "g1": 0.08,
+    "g2": 0.05,
+    "gterm": 0.03,
+    "discount": 0.09,
+    "mos": 0.65
+  },
+  "intrinsic_value_total": 1642611319328.0,
+  "intrinsic_value_per_share": 1314.0,
+  "sensitivity_per_share": {
+    "rows_discount": [
+      0.08,
+      0.09,
+      0.09999999999999999
+    ],
+    "cols_g1": [
+      0.06,
+      0.08,
+      0.1
+    ],
+    "grid": [
+      [
+        1457.18,
+        1588.83,
+        1730.18
+      ],
+      [
+        1206.7,
+        1314.0,
+        1429.16
+      ],
+      [
+        1028.17,
+        1118.19,
+        1214.73
+      ]
+    ]
+  },
+  "iv_range_per_share": [
+    1028.17,
+    1730.18
+  ],
+  "listings": [
+    {
+      "ticker": "600519.SH",
+      "price": 1350.6,
+      "price_ccy": "CNY",
+      "price_date": "20260731",
+      "price_in_report_ccy": 1350.6,
+      "price_vs_iv_low": 1.314,
+      "price_vs_iv_mid": 1.028,
+      "buy_threshold_mos": 854.1,
+      "undervalued_at_mos": false
+    }
+  ],
+  "verdict": "未达到安全边际",
+  "note": "区间下沿=折现率+1pp且g1-2pp；上沿=折现率-1pp且g1+2pp"
+}

@@ -60,22 +60,33 @@ def check(snap: dict, high_leverage: bool) -> dict:
     # ---------- 第 1 道：硬指标（林园严格版） ----------
     y_gm, gm = latest(years, "gross_margin")
     gm_ok = gm is not None and gm >= 0.5
-    # 毛利率连续3年不下滑
+    # 毛利率连续3年不下滑（容忍 <=0.5pp 的微观波动）
     gm_years = sorted(y for y in years if years[y].get("gross_margin") is not None)[-4:]
-    declines = [f"{a}->{b}" for a, b in zip(gm_years, gm_years[1:])
-                if years[b]["gross_margin"] < years[a]["gross_margin"]]
+    declines = [f"{a}->{b}({(years[a]['gross_margin']-years[b]['gross_margin'])*100:.1f}pp)"
+                for a, b in zip(gm_years, gm_years[1:])
+                if years[b]["gross_margin"] < years[a]["gross_margin"] - 0.005]
     v = INSUF if gm is None else (PASS if gm_ok and not declines else FAIL)
     add(1, "毛利率>=50%且连续3年不下滑", v,
         f"最新({y_gm}): {gm:.1%}; 下滑区间: {declines or '无'}" if gm else "无数据",
-        ">=50%, 3年不下滑")
+        ">=50%, 3年不下滑(容忍0.5pp)")
 
     v, detail = consec(years, "roe", 5, lambda x: x >= 0.15)
     add(1, "ROE连续5年>=15%", v,
         {y: f"{x:.1%}" for y, x in detail.items()}, ">=15% x 5年")
 
-    v, detail = consec(years, "ocf_np", 3, lambda x: x >= 0.8)
-    add(1, "经营现金流/净利润>=80%(近3年)", v,
-        {y: f"{x:.0%}" for y, x in detail.items()}, ">=80%")
+    # 现金流覆盖：近3年均值>=80%，且无单年<50%（容忍单年扰动，拒绝持续性现金失血）
+    ocf_years = sorted(y for y in years if years[y].get("ocf_np") is not None)[-3:]
+    if len(ocf_years) < 3:
+        add(1, "经营现金流/净利润>=80%(近3年)", INSUF,
+            f"仅{len(ocf_years)}年数据", "均值>=80%且无单年<50%")
+    else:
+        vals = {y: years[y]["ocf_np"] for y in ocf_years}
+        avg = sum(vals.values()) / 3
+        deep = [y for y, x in vals.items() if x < 0.5]
+        v = PASS if (avg >= 0.8 and not deep) else FAIL
+        add(1, "经营现金流/净利润>=80%(近3年)", v,
+            f"均值={avg:.0%}; 各年: {{{', '.join(f'{y}:{x:.0%}' for y, x in vals.items())}}}",
+            "均值>=80%且无单年<50%")
 
     y_cx, cx = latest(years, "capex_rev")
     add(1, "资本开支/营收<10%", INSUF if cx is None else (PASS if cx < 0.10 else FAIL),
