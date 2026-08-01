@@ -2,18 +2,18 @@
   "ticker": "200596.SZ",
   "name": "古井贡酒B",
   "currency": "CNY",
-  "base_owner_earnings": 2681595867.0,
-  "base_source": "avg3 (2024=36.3亿)",
+  "base_owner_earnings": 2946147767.0,
+  "base_source": "avg3 (2025=26.4亿)",
   "share_capital": 528600000.0,
   "assumptions": {
-    "g1": 0.03,
+    "g1": 0.02,
     "g2": 0.01,
     "gterm": 0.01,
     "discount": 0.09,
     "mos": 0.65
   },
-  "intrinsic_value_total": 36857876183.0,
-  "intrinsic_value_per_share": 69.73,
+  "intrinsic_value_total": 38814662037.0,
+  "intrinsic_value_per_share": 73.43,
   "sensitivity_per_share": {
     "rows_discount": [
       0.08,
@@ -21,31 +21,31 @@
       0.09999999999999999
     ],
     "cols_g1": [
-      0.009999999999999998,
-      0.03,
-      0.05
+      0.0,
+      0.02,
+      0.04
     ],
     "grid": [
       [
-        73.2,
-        79.8,
-        86.91
+        74.65,
+        83.98,
+        91.51
       ],
       [
-        64.05,
-        69.73,
-        75.83
+        65.49,
+        73.43,
+        79.9
       ],
       [
-        56.93,
-        61.89,
-        67.22
+        58.36,
+        65.22,
+        70.88
       ]
     ]
   },
   "iv_range_per_share": [
-    56.93,
-    86.91
+    58.36,
+    91.51
   ],
   "listings": [
     {
@@ -54,9 +54,9 @@
       "price_ccy": "HKD",
       "price_date": "2026-07-31",
       "price_in_report_ccy": 54.53,
-      "price_vs_iv_low": 0.958,
-      "price_vs_iv_mid": 0.782,
-      "buy_threshold_mos": 45.32,
+      "price_vs_iv_low": 0.934,
+      "price_vs_iv_mid": 0.743,
+      "buy_threshold_mos": 47.73,
       "undervalued_at_mos": false
     },
     {
@@ -65,9 +65,9 @@
       "price_ccy": "CNY",
       "price_date": "20260731",
       "price_in_report_ccy": 94.95,
-      "price_vs_iv_low": 1.668,
-      "price_vs_iv_mid": 1.362,
-      "buy_threshold_mos": 45.32,
+      "price_vs_iv_low": 1.627,
+      "price_vs_iv_mid": 1.293,
+      "buy_threshold_mos": 47.73,
       "undervalued_at_mos": false
     }
   ],

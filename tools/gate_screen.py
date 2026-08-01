@@ -16,7 +16,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 
-PASS, FAIL, INSUF = "PASS", "FAIL", "INSUFFICIENT"
+PASS, FAIL, INSUF, REVIEW = "PASS", "FAIL", "INSUFFICIENT", "REVIEW"
 
 
 def consec(years: dict, key: str, n: int, cond, use_latest: bool = True):

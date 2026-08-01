@@ -14,7 +14,7 @@
     },
     {
       "ticker": "T14.SI",
-      "last_close": 2.7899999619,
+      "last_close": 2.79,
       "date": "2026-07-30",
       "currency": "USD"
     }
@@ -187,11 +187,39 @@
       "owner_earnings": 2237458235.17,
       "rev_growth": -0.11135259853538461,
       "np_growth": 1.259367150008371
+    },
+    "2025": {
+      "total_assets": 11689731195.88,
+      "total_liab": 4589788347.63,
+      "equity_parent": 7099497152.9,
+      "contract_liab": 148526365.7,
+      "goodwill": null,
+      "revenue": 4917335979.38,
+      "cogs": 1277410417.93,
+      "np_parent": 2131021536.79,
+      "np_total": 2110749494.92,
+      "rd_expense": 189808190.41,
+      "sales_expense": 2025612718.37,
+      "ocf": 461065773.21,
+      "capex": 118612858.88,
+      "distributions": 981285788.46,
+      "depreciation": 91010617.6,
+      "amortization": 21910659.82,
+      "rou_depreciation": 2738518.68,
+      "gross_margin": 0.7402230754037145,
+      "roe": 0.2852183321613091,
+      "ocf_np": 0.2163590396671976,
+      "capex_rev": 0.024121365588477696,
+      "debt_ratio": 0.39263420781203706,
+      "da": 115659796.1,
+      "owner_earnings": 2128068474.0099998,
+      "rev_growth": -0.327013328539253,
+      "np_growth": -0.0440995781414205
     }
   },
   "fx_to_report_currency": {
     "pair": "USDCNY=X",
-    "rate": 6.7505002022,
+    "rate": 6.7505,
     "date": "2026-07-31"
   }
 }
