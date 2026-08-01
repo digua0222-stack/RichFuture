@@ -7,13 +7,13 @@
   "share_capital": 3881608005.0,
   "assumptions": {
     "g1": 0.05,
-    "g2": 0.03,
-    "gterm": 0.03,
+    "g2": 0.02,
+    "gterm": 0.01,
     "discount": 0.09,
     "mos": 0.65
   },
-  "intrinsic_value_total": 525883307592.0,
-  "intrinsic_value_per_share": 135.48,
+  "intrinsic_value_total": 432839174737.0,
+  "intrinsic_value_per_share": 111.51,
   "sensitivity_per_share": {
     "rows_discount": [
       0.08,
@@ -27,25 +27,25 @@
     ],
     "grid": [
       [
-        149.12,
-        162.82,
-        177.55
+        117.53,
+        128.03,
+        139.32
       ],
       [
-        124.27,
-        135.48,
-        147.53
+        102.5,
+        111.51,
+        121.19
       ],
       [
-        106.52,
-        115.96,
-        126.1
+        90.82,
+        98.68,
+        107.12
       ]
     ]
   },
   "iv_range_per_share": [
-    106.52,
-    177.55
+    90.82,
+    139.32
   ],
   "listings": [
     {
@@ -54,12 +54,12 @@
       "price_ccy": "CNY",
       "price_date": "20260731",
       "price_in_report_ccy": 78.0,
-      "price_vs_iv_low": 0.732,
-      "price_vs_iv_mid": 0.576,
-      "buy_threshold_mos": 88.06,
-      "undervalued_at_mos": true
+      "price_vs_iv_low": 0.859,
+      "price_vs_iv_mid": 0.699,
+      "buy_threshold_mos": 72.48,
+      "undervalued_at_mos": false
     }
   ],
-  "verdict": "严重低估",
+  "verdict": "未达到安全边际",
   "note": "区间下沿=折现率+1pp且g1-2pp；上沿=折现率-1pp且g1+2pp"
 }

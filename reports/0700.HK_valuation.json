@@ -8,12 +8,12 @@
   "assumptions": {
     "g1": 0.08,
     "g2": 0.05,
-    "gterm": 0.03,
+    "gterm": 0.02,
     "discount": 0.09,
     "mos": 0.65
   },
-  "intrinsic_value_total": 3479029706579.0,
-  "intrinsic_value_per_share": 386.49,
+  "intrinsic_value_total": 3164464589128.0,
+  "intrinsic_value_per_share": 351.54,
   "sensitivity_per_share": {
     "rows_discount": [
       0.08,
@@ -27,25 +27,25 @@
     ],
     "grid": [
       [
-        428.6,
-        467.32,
-        508.9
+        380.19,
+        414.17,
+        450.64
       ],
       [
-        354.93,
-        386.49,
-        420.36
+        323.1,
+        351.54,
+        382.06
       ],
       [
-        302.42,
-        328.89,
-        357.29
+        280.43,
+        304.75,
+        330.83
       ]
     ]
   },
   "iv_range_per_share": [
-    302.42,
-    508.9
+    280.43,
+    450.64
   ],
   "listings": [
     {
@@ -54,9 +54,9 @@
       "price_ccy": "HKD",
       "price_date": "2026-07-30T16:00:00.000Z",
       "price_in_report_ccy": 408.81,
-      "price_vs_iv_low": 1.352,
-      "price_vs_iv_mid": 1.058,
-      "buy_threshold_mos": 251.22,
+      "price_vs_iv_low": 1.458,
+      "price_vs_iv_mid": 1.163,
+      "buy_threshold_mos": 228.5,
       "undervalued_at_mos": false
     }
   ],

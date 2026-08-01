@@ -6,14 +6,14 @@
   "base_source": "avg3 (2024=36.3亿)",
   "share_capital": 528600000.0,
   "assumptions": {
-    "g1": 0.06,
-    "g2": 0.04,
-    "gterm": 0.03,
+    "g1": 0.03,
+    "g2": 0.01,
+    "gterm": 0.01,
     "discount": 0.09,
     "mos": 0.65
   },
-  "intrinsic_value_total": 54152332722.0,
-  "intrinsic_value_per_share": 102.44,
+  "intrinsic_value_total": 36857876183.0,
+  "intrinsic_value_per_share": 69.73,
   "sensitivity_per_share": {
     "rows_discount": [
       0.08,
@@ -21,31 +21,31 @@
       0.09999999999999999
     ],
     "cols_g1": [
-      0.039999999999999994,
-      0.06,
-      0.08
+      0.009999999999999998,
+      0.03,
+      0.05
     ],
     "grid": [
       [
-        113.12,
-        123.46,
-        134.58
+        73.2,
+        79.8,
+        86.91
       ],
       [
-        93.99,
-        102.44,
-        111.52
+        64.05,
+        69.73,
+        75.83
       ],
       [
-        80.35,
-        87.45,
-        95.08
+        56.93,
+        61.89,
+        67.22
       ]
     ]
   },
   "iv_range_per_share": [
-    80.35,
-    134.58
+    56.93,
+    86.91
   ],
   "listings": [
     {
@@ -54,10 +54,10 @@
       "price_ccy": "HKD",
       "price_date": "2026-07-31",
       "price_in_report_ccy": 54.53,
-      "price_vs_iv_low": 0.679,
-      "price_vs_iv_mid": 0.532,
-      "buy_threshold_mos": 66.59,
-      "undervalued_at_mos": true
+      "price_vs_iv_low": 0.958,
+      "price_vs_iv_mid": 0.782,
+      "buy_threshold_mos": 45.32,
+      "undervalued_at_mos": false
     },
     {
       "ticker": "000596.SZ",
@@ -65,12 +65,12 @@
       "price_ccy": "CNY",
       "price_date": "20260731",
       "price_in_report_ccy": 94.95,
-      "price_vs_iv_low": 1.182,
-      "price_vs_iv_mid": 0.927,
-      "buy_threshold_mos": 66.59,
+      "price_vs_iv_low": 1.668,
+      "price_vs_iv_mid": 1.362,
+      "buy_threshold_mos": 45.32,
       "undervalued_at_mos": false
     }
   ],
-  "verdict": "严重低估",
+  "verdict": "未达到安全边际",
   "note": "区间下沿=折现率+1pp且g1-2pp；上沿=折现率-1pp且g1+2pp"
 }
