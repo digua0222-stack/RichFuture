@@ -2,9 +2,42 @@
   "ticker": "200429.SZ",
   "name": "粤高速B",
   "verdict": "REJECT@GATE1 | 永续性复核: 1项REVIEW",
+  "highest_pass_tier": null,
+  "tiers": {
+    "S": {
+      "name": "S档 · 林园档（永续复利型）",
+      "verdict": "FAIL",
+      "n_fail": 4,
+      "fail_items": [
+        "ROE连续5年>=15%",
+        "资本开支/营收<10%",
+        "营收连续3年>10%增长",
+        "净利润连续3年正增长"
+      ]
+    },
+    "A": {
+      "name": "A档 · 巴菲特档（稳健价值型）",
+      "verdict": "FAIL",
+      "n_fail": 2,
+      "fail_items": [
+        "资本开支/营收<12%",
+        "营收3年>0且5年CAGR>=3%"
+      ]
+    },
+    "B": {
+      "name": "B档 · 周期档（中值回归型）",
+      "verdict": "SKIP",
+      "n_fail": 1,
+      "fail_items": [
+        "B档（周期档）判定未启用"
+      ],
+      "note": "B档仅对人工确认的强周期标的启用（--cyclical）"
+    }
+  },
   "checks": [
     {
       "gate": 0,
+      "tier": null,
       "item": "高杠杆行业",
       "verdict": "PASS",
       "detail": "非高杠杆行业（默认）",
@@ -12,6 +45,7 @@
     },
     {
       "gate": 0,
+      "tier": null,
       "item": "经营现金流连续2年为负",
       "verdict": "PASS",
       "detail": "负值年份: 无",
@@ -19,6 +53,7 @@
     },
     {
       "gate": 0,
+      "tier": null,
       "item": "现金流长期远低于净利润(<50%)",
       "verdict": "PASS",
       "detail": "覆盖<50%的年份: 无",
@@ -26,6 +61,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "毛利率>=50%且连续3年不下滑",
       "verdict": "PASS",
       "detail": "最新(2025): 64.5%; 下滑区间: 无",
@@ -33,6 +69,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "ROE连续5年>=15%",
       "verdict": "FAIL",
       "detail": {
@@ -46,6 +83,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "经营现金流/净利润>=80%(近3年)",
       "verdict": "PASS",
       "detail": "均值=214%; 各年: {2023:235%, 2024:208%, 2025:198%}",
@@ -53,6 +91,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "资本开支/营收<10%",
       "verdict": "FAIL",
       "detail": "最新(2025): 54.4%",
@@ -60,6 +99,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "资产负债率<50%",
       "verdict": "PASS",
       "detail": "最新(2025): 47.0%",
@@ -67,6 +107,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "营收连续3年>10%增长",
       "verdict": "FAIL",
       "detail": {
@@ -78,6 +119,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "净利润连续3年正增长",
       "verdict": "FAIL",
       "detail": {
@@ -89,6 +131,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "有稳定分红记录",
       "verdict": "PASS",
       "detail": "最新(2025): 分配 20.1亿（含利息）",
@@ -96,6 +139,7 @@
     },
     {
       "gate": 1,
+      "tier": "S",
       "item": "预收款/合同负债（参考项）",
       "verdict": "PASS",
       "detail": {
@@ -104,7 +148,80 @@
       "threshold": "越多越好"
     },
     {
+      "gate": 1,
+      "tier": "A",
+      "item": "毛利率>=30%且5年降幅<=5pp",
+      "verdict": "PASS",
+      "detail": "最新(2025): 64.5%; 2021->2025 降幅 -1.0pp",
+      "threshold": ">=30%, 5年降幅<=5pp"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "ROE均值>=15%(5年)且近3年>=12%",
+      "verdict": "PASS",
+      "detail": "5年均值=16.1%; 近3年: {2023:16.6%, 2024:14.9%, 2025:16.2%}",
+      "threshold": "均值>=15% & 每年>=12%"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "经营现金流/净利润>=80%(近3年，同S档)",
+      "verdict": "PASS",
+      "detail": "均值=214%; 各年: {2023:235%, 2024:208%, 2025:198%}",
+      "threshold": "均值>=80%且无单年<50%"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "资本开支/营收<12%",
+      "verdict": "FAIL",
+      "detail": "最新(2025): 54.4%",
+      "threshold": "<12%"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "资产负债率<55%",
+      "verdict": "PASS",
+      "detail": "最新(2025): 47.0%",
+      "threshold": "<55%"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "营收3年>0且5年CAGR>=3%",
+      "verdict": "FAIL",
+      "detail": "近3年: {2023:17.0%, 2024:-6.3%, 2025:-2.2%}; CAGR(2021->2025)=-4.1%",
+      "threshold": ">0 x 3年 & CAGR>=3%"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "净利3年无亏损且5年CAGR>=0",
+      "verdict": "PASS",
+      "detail": "近3年归母(亿): {2023:16.3, 2024:15.6, 2025:18.0}; CAGR(2021->2025)=1.5%",
+      "threshold": "无亏损 x 3年 & CAGR>=0（基数为负时降级: 末年为正且亏损<=1年）"
+    },
+    {
+      "gate": 1,
+      "tier": "A",
+      "item": "有分红记录",
+      "verdict": "PASS",
+      "detail": "最新(2025): 分配 20.1亿",
+      "threshold": ">0"
+    },
+    {
+      "gate": 1,
+      "tier": "B",
+      "item": "B档（周期档）判定未启用",
+      "verdict": "INSUFFICIENT",
+      "detail": "非人工确认的强周期标的；确认强周期行业后加 --cyclical 重跑",
+      "threshold": "--cyclical 启用"
+    },
+    {
       "gate": 2.5,
+      "tier": null,
       "item": "毛利率变异系数CV（稳定性）",
       "verdict": "PASS",
       "detail": "CV=0.015（5年）",
@@ -112,6 +229,7 @@
     },
     {
       "gate": 2.5,
+      "tier": null,
       "item": "营收最大单年跌幅",
       "verdict": "REVIEW",
       "detail": "最大跌幅: -21.2%",
@@ -119,6 +237,7 @@
     },
     {
       "gate": 2.5,
+      "tier": null,
       "item": "维持性再投入强度(capex+研发)/营收",
       "verdict": "FAIL",
       "detail": "近3年均值=43.5%；各年: {2021:10%, 2022:21%, 2023:32%, 2024:45%, 2025:54%}",

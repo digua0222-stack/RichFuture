@@ -60,12 +60,12 @@ python tools/ifind_fetch.py 600329.SH --name 达仁堂 --years 2019-2024 --listi
 #    或（HK/境外）
 python tools/yahoo_fetch.py 0700.HK --name 腾讯控股 --fx HKDCNY=X
 
-# 2. 第 0/1 道门 → reports/<ticker>_gate01.json
+# 2. 第 0/1 道门（三档制：S/A/B 逐档判定，取最高通过档） → data/derived/<ticker>_gate01.json
 python tools/gate_screen.py 600329.SH          # 高杠杆行业加 --high-leverage
 
 # 3. 第 2 道门（LLM 陪审团，按 references/qualitative-jury.md 执行，人工/agent 判断）
 
-# 4. 第 3 道门 → reports/<ticker>_valuation.json（假设同步留档 data/assumptions/）
+# 4. 第 3 道门 → data/derived/<ticker>_valuation.json（假设同步留档 data/assumptions/）
 python tools/dcf.py 600329.SH --base avg3 --g1 0.05 --g2 0.03 --mos 0.65 --save-assumptions
 #    一次性损益年份用 --base-override <元> 人工修正基准
 ```
