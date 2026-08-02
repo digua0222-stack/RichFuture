@@ -1,0 +1,65 @@
+{
+  "ticker": "900948.SH",
+  "name": "伊泰B股",
+  "currency": "CNY",
+  "base_owner_earnings": 6500000000.0,
+  "base_source": "人工修正基准（剔除一次性损益，参考 2025=23.9亿）",
+  "share_capital": 2929267782,
+  "assumptions": {
+    "g1": 0.01,
+    "g2": 0.005,
+    "gterm": 0.0,
+    "discount": 0.09,
+    "mos": 0.65
+  },
+  "intrinsic_value_total": 76396174142.0,
+  "intrinsic_value_per_share": 26.08,
+  "sensitivity_per_share": {
+    "rows_discount": [
+      0.08,
+      0.09,
+      0.09999999999999999
+    ],
+    "cols_g1": [
+      -0.01,
+      0.01,
+      0.03
+    ],
+    "grid": [
+      [
+        25.8,
+        29.39,
+        32.01
+      ],
+      [
+        22.99,
+        26.08,
+        28.37
+      ],
+      [
+        20.74,
+        23.44,
+        25.46
+      ]
+    ]
+  },
+  "iv_range_per_share": [
+    20.74,
+    32.01
+  ],
+  "listings": [
+    {
+      "ticker": "900948.SH",
+      "price": 2.879,
+      "price_ccy": "USD",
+      "price_date": "2026-07-31",
+      "price_in_report_ccy": 19.43,
+      "price_vs_iv_low": 0.937,
+      "price_vs_iv_mid": 0.745,
+      "buy_threshold_mos": 16.95,
+      "undervalued_at_mos": false
+    }
+  ],
+  "verdict": "未达到安全边际",
+  "note": "区间下沿=折现率+1pp且g1-2pp；上沿=折现率-1pp且g1+2pp"
+}

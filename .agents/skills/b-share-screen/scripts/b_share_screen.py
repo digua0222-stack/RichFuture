@@ -109,6 +109,41 @@ def dividends_batch(since: str = "2023-01-01") -> dict:
     return out
 
 
+def div_sina(code: str) -> dict:
+    """新浪分红配股页 fallback（覆盖纯B股/B+H等东财未收录标的）→ {除息年份: [方案]}。
+    口径：按除权除息日历年（与东财按REPORT_DATE财年略有差异，筛选布尔判定够用）。"""
+    import io
+    import pandas as pd
+    url = f"https://vip.stock.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{code}.phtml"
+    req = urllib.request.Request(url, headers=UA)
+    with urllib.request.urlopen(req, timeout=20) as r:
+        html = r.read().decode("gbk", errors="replace")
+    out = {}
+    for t in pd.read_html(io.StringIO(html)):
+        cols = " ".join(str(c) for c in t.columns)
+        if "派息" not in cols or "除权除息日" not in cols:
+            continue
+        # 摊平多级表头
+        t.columns = ["公告日期", "送股", "转增", "派息", "进度", "除息日", "登记日", "红股上市", "详细"][: len(t.columns)]
+        for _, row in t.iterrows():
+            try:
+                cash = float(row.get("派息") or 0)
+            except (TypeError, ValueError):
+                continue
+            if cash <= 0:
+                continue
+            ex = str(row.get("除息日") or "")
+            ann = str(row.get("公告日期") or "")
+            # 财年归属以公告日期为准：公告月<=7 → 上一财年（年度/前三季度分红）；>=8 → 当财年（中期分红）
+            if ann[:4].isdigit():
+                y, m = int(ann[:4]), int(ann[5:7])
+                fy = str(y - 1) if m <= 7 else str(y)
+                tag = f"除息{ex[:10]}" if ex[:4].isdigit() else f"宣告{ann[:10]},未除息"
+                out.setdefault(fy, []).append(f"10派{cash:g}元({tag})")
+        break
+    return out
+
+
 def screen(years: list[str]) -> str:
     shares = list_b_shares()
     if not shares:
@@ -134,7 +169,21 @@ def screen(years: list[str]) -> str:
     passed, edge, rej_fin, rej_div = [], [], [], []
     for s in shares:
         code = s["code"]
-        div_rec = div_by_code.get(code) or {}
+        div_rec = {y: list(v) for y, v in (div_by_code.get(code) or {}).items()}
+        src = "东财"
+        if not all(y in div_rec for y in years):
+            # 东财未覆盖（B股分红挂A股代码或纯B股）→ 新浪 fallback，除息月<8归上财年、>=8归当财年
+            try:
+                time.sleep(0.15)
+                sina = div_sina(code)
+            except Exception as e:
+                print(f"# WARN {code} {s['name']} 新浪分红: {e}", file=sys.stderr)
+                sina = {}
+            for fy, plans in sina.items():
+                for p in plans:
+                    if p not in div_rec.setdefault(fy, []):
+                        div_rec[fy].append(p)
+            src = "东财+新浪" if div_rec else "新浪"
         div_years = set(div_rec)
         jll = {y: (fin_by_year[y].get(code) or {}).get("XSJLL") for y in years}
         zfz = {y: (fin_by_year[y].get(code) or {}).get("ZCFZL") for y in years}

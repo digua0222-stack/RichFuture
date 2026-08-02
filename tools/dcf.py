@@ -115,7 +115,8 @@ def main():
         "note": "区间下沿=折现率+1pp且g1-2pp；上沿=折现率-1pp且g1+2pp",
     }
 
-    out = REPO / "reports" / f"{args.ticker}_valuation.json"
+    out = REPO / "data" / "derived" / f"{args.ticker}_valuation.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     if args.save_assumptions:
         (REPO / "data" / "assumptions").mkdir(exist_ok=True)

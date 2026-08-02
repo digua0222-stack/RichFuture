@@ -2,8 +2,8 @@
   "ticker": "0700.HK",
   "name": "腾讯控股",
   "currency": "CNY",
-  "base_owner_earnings": 153014666667.0,
-  "base_source": "avg3 (2025=1779.9亿)",
+  "base_owner_earnings": 212700000000.0,
+  "base_source": "人工修正基准（剔除一次性损益，参考 2025=1779.9亿）",
   "share_capital": 9001629075.0,
   "assumptions": {
     "g1": 0.08,
@@ -12,8 +12,8 @@
     "discount": 0.09,
     "mos": 0.65
   },
-  "intrinsic_value_total": 3164464589128.0,
-  "intrinsic_value_per_share": 351.54,
+  "intrinsic_value_total": 4398804590240.0,
+  "intrinsic_value_per_share": 488.67,
   "sensitivity_per_share": {
     "rows_discount": [
       0.08,
@@ -27,25 +27,25 @@
     ],
     "grid": [
       [
-        380.19,
-        414.17,
-        450.64
+        528.49,
+        575.72,
+        626.41
       ],
       [
-        323.1,
-        351.54,
-        382.06
+        449.13,
+        488.67,
+        531.08
       ],
       [
-        280.43,
-        304.75,
-        330.83
+        389.82,
+        423.62,
+        459.87
       ]
     ]
   },
   "iv_range_per_share": [
-    280.43,
-    450.64
+    389.82,
+    626.41
   ],
   "listings": [
     {
@@ -54,9 +54,9 @@
       "price_ccy": "HKD",
       "price_date": "2026-07-30T16:00:00.000Z",
       "price_in_report_ccy": 408.81,
-      "price_vs_iv_low": 1.458,
-      "price_vs_iv_mid": 1.163,
-      "buy_threshold_mos": 228.5,
+      "price_vs_iv_low": 1.049,
+      "price_vs_iv_mid": 0.837,
+      "buy_threshold_mos": 317.63,
       "undervalued_at_mos": false
     }
   ],

@@ -2,7 +2,7 @@
 """gate_screen.py — 价值投资门禁第 0/1 道门自动判定。
 
 读取 data/snapshots/<ticker>.json，按 value-investing-gate skill 的硬指标逐项检查，
-输出人类可读表格 + 机器可读 JSON（reports/<ticker>_gate01.json）。
+输出人类可读表格 + 机器可读 JSON（data/derived/<ticker>_gate01.json）。
 
 用法:
     python tools/gate_screen.py <ticker> [--high-leverage]   # 高杠杆行业用 --high-leverage 标记
@@ -171,8 +171,8 @@ def main():
     snap = json.loads((REPO / "data" / "snapshots" / f"{args.ticker}.json").read_text(encoding="utf-8"))
     result = check(snap, args.high_leverage)
 
-    out = REPO / "reports" / f"{args.ticker}_gate01.json"
-    out.parent.mkdir(exist_ok=True)
+    out = REPO / "data" / "derived" / f"{args.ticker}_gate01.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"\n== {result['name']} ({result['ticker']}) 门禁结论: {result['verdict']} ==  [数据源: {result['source']}, {result['as_of']}]")

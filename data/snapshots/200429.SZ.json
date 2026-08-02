@@ -1,0 +1,152 @@
+{
+ "ticker": "200429.SZ",
+ "name": "粤高速B",
+ "industry": "高速公路",
+ "currency": "CNY",
+ "source": "东财F10报表(2021-2025年报)",
+ "as_of": "2026-08-02",
+ "share_capital": 2090806126,
+ "listings": [
+  {
+   "ticker": "200429.SZ",
+   "last_close": 9.88,
+   "date": "2026-08-01",
+   "currency": "HKD"
+  },
+  {
+   "ticker": "000429.SZ",
+   "last_close": null,
+   "date": "2026-08-01",
+   "currency": "CNY"
+  }
+ ],
+ "fx_to_report_currency": {
+  "pair": "HKDCNY=X",
+  "rate": 0.8603,
+  "date": "2026-08-01"
+ },
+ "years": {
+  "2021": {
+   "revenue": 5288057678,
+   "cogs": 1929512026,
+   "np_parent": 1700406982,
+   "equity_parent": 8982437985,
+   "ocf": 3669744721,
+   "capex": 513663937,
+   "da": 1266498907,
+   "total_assets": 18875766799,
+   "total_liab": 7554777641,
+   "contract_liab": 22000,
+   "goodwill": 0,
+   "gross_margin": 0.6351189522710043,
+   "debt_ratio": 0.4002368603854672,
+   "owner_earnings": 2453241952,
+   "ocf_np": 2.1581567000411197,
+   "capex_rev": 0.09713659878125104,
+   "roe": 0.18930350366343218,
+   "distributions": 1667198772.33
+  },
+  "2022": {
+   "revenue": 4168634114,
+   "cogs": 1586349035,
+   "np_parent": 1276341323,
+   "equity_parent": 9075659163,
+   "ocf": 2752026558,
+   "capex": 875179014,
+   "da": 1042585869,
+   "total_assets": 20267998964,
+   "total_liab": 8899319781,
+   "contract_liab": null,
+   "goodwill": 0,
+   "gross_margin": 0.6194559197046383,
+   "debt_ratio": 0.4390823088557959,
+   "owner_earnings": 1443748178,
+   "ocf_np": 2.156183858038419,
+   "capex_rev": 0.2099438305369105,
+   "roe": 0.14063345703895955,
+   "rev_growth": -0.2116889852879551,
+   "np_growth": -0.24939068322409416,
+   "distributions": 1993666552.33
+  },
+  "2023": {
+   "revenue": 4879066948,
+   "cogs": 1740818258,
+   "np_parent": 1633811034,
+   "equity_parent": 9847531856,
+   "ocf": 3831785563,
+   "capex": 1539385895,
+   "da": 1148728295,
+   "total_assets": 21368963167,
+   "total_liab": 8960157364,
+   "contract_liab": null,
+   "goodwill": 0,
+   "gross_margin": 0.6432067285500999,
+   "debt_ratio": 0.4193070713808489,
+   "owner_earnings": 1243153434,
+   "ocf_np": 2.345305230078401,
+   "capex_rev": 0.31550825422287276,
+   "roe": 0.1659107132519237,
+   "rev_growth": 0.17042340838071451,
+   "np_growth": 0.28007375813844115,
+   "distributions": 1727111491.46
+  },
+  "2024": {
+   "revenue": 4569903079,
+   "cogs": 1631074265,
+   "np_parent": 1562122220,
+   "equity_parent": 10468100320,
+   "ocf": 3256363594,
+   "capex": 2036600945,
+   "da": 1061391842,
+   "total_assets": 22441664115,
+   "total_liab": 9245774082,
+   "contract_liab": null,
+   "goodwill": 0,
+   "gross_margin": 0.6430834009379217,
+   "debt_ratio": 0.4119914652773066,
+   "owner_earnings": 586913117,
+   "ocf_np": 2.0845767074486656,
+   "capex_rev": 0.44565517250437076,
+   "roe": 0.14922690576584005,
+   "rev_growth": -0.06336536725054177,
+   "np_growth": -0.043878277541367125,
+   "distributions": 1957815078.56
+  },
+  "2025": {
+   "revenue": 4469738161,
+   "cogs": 1586145350,
+   "np_parent": 1801337615,
+   "equity_parent": 11116100976,
+   "ocf": 3559494395,
+   "capex": 2430180576,
+   "da": 1020832111,
+   "total_assets": 26790914411,
+   "total_liab": 12587167111,
+   "contract_liab": null,
+   "goodwill": 0,
+   "gross_margin": 0.645136853017552,
+   "debt_ratio": 0.46982969367525107,
+   "owner_earnings": 391989150,
+   "ocf_np": 1.9760284609390117,
+   "capex_rev": 0.5436964064705534,
+   "roe": 0.1620476117380674,
+   "rev_growth": -0.021918390011439453,
+   "np_growth": 0.15313487762820505,
+   "distributions": 2014028498.7
+  }
+ },
+ "dividends_declared_fy": {
+  "2023": {
+   "per_10_shares": 5.47,
+   "note": "年度10派5.47"
+  },
+  "2024": {
+   "per_10_shares": 5.23,
+   "note": "年度10派5.23"
+  },
+  "2025": {
+   "per_10_shares": 6.04,
+   "note": "年度10派6.04，2026-08-10除息/08-12派息"
+  }
+ }
+}
