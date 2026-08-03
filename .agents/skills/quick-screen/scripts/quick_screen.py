@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """quick_screen.py — 快速筛选（四维参数化：净利率/负债率/现金流/股息率 × 市场或领域）
 
-数据源（东方财富 datacenter 公开接口，全批量、不逐只请求）：
+数据源（东方财富 datacenter 公开接口 + 新浪行情）：
 - 标的池+市值/股本/PE/PB/最新收盘价：RPT_VALUEANALYSIS_DET（最新交易日全市场）
 - 当月平均股价：候选标的在最新行情日所属自然月内的日收盘价算术平均
 - 净利率 XSJLL / 负债率 ZCFZL / 每股经营现金流 MGJYXJJE：RPT_F10_FINANCE_MAINFINADATA（年报）
 - 股息率：RPT_SHAREBONUS_DET（目标财年每10股派息合计）×总股本÷最新总市值（近似 TTM，口径见输出注记）
+- 近5年平均股息率：最近5个完整财年平均每股现金分红÷当前人民币折算价
 
 用法示例：
   python quick_screen.py --market b                          # B股四维默认（净利率≥10/负债率≤50/现金流>0/股息率≥3）
@@ -100,6 +101,20 @@ def month_averages_b(codes, date):
             out[code] = sum(closes) / len(closes)
         time.sleep(0.12)
     return out
+
+def average_dividend_yield(per10_by_year, current_price_cny, years):
+    """最近N个完整财年平均每股现金分红÷当前人民币折算价。"""
+    if not current_price_cny or not years:
+        return None, {}
+    annual_yields = {}
+    for yy in years:
+        try:
+            per10 = float(per10_by_year.get(yy) or 0)
+        except (TypeError, ValueError):
+            per10 = 0.0
+        annual_yields[yy] = per10 / 10 / current_price_cny * 100
+    avg = sum(annual_yields.values()) / len(annual_yields)
+    return round(avg, 2), annual_yields
 
 def fx_rates():
     """美元/港币兑人民币（新浪外汇，近似即期）；失败回退常量并 WARN。"""
@@ -218,9 +233,19 @@ def fin_batch(report_date):
                     f'(REPORT_TYPE="年报")(REPORT_DATE=\'{report_date}\')')
     return {r["SECURITY_CODE"]: r for r in rows}
 
-def dividends_batch(since):
-    rows = dc_batch("RPT_SHAREBONUS_DET", "SECURITY_CODE,REPORT_DATE,PRETAX_BONUS_RMB",
-                    f"(NOTICE_DATE>='{since}')", sort="NOTICE_DATE", pause=0.15)
+def dividends_batch(since, codes=None, chunk_size=80):
+    """批量分红；提供 codes 时只补取候选，避免扫描全市场多年历史。"""
+    rows = []
+    chunks = [None] if not codes else [codes[i:i + chunk_size]
+                                       for i in range(0, len(codes), chunk_size)]
+    for chunk in chunks:
+        filt = f"(NOTICE_DATE>='{since}')"
+        if chunk:
+            quoted = ",".join(f'"{code}"' for code in chunk)
+            filt += f"(SECURITY_CODE in ({quoted}))"
+        rows += dc_batch("RPT_SHAREBONUS_DET",
+                         "SECURITY_CODE,REPORT_DATE,PRETAX_BONUS_RMB",
+                         filt, sort="NOTICE_DATE", pause=0.08)
     out = {}
     for r in rows:
         fy = (r.get("REPORT_DATE") or "")[:4]
@@ -249,6 +274,7 @@ def main():
     y = today.year - 1 if today.month > 4 else today.year - 2
     years = a.years.split(",") if a.years else [str(y)]
     target_fy = years[-1]
+    history_years = [str(int(target_fy) - i) for i in range(4, -1, -1)]
 
     date = latest_trade_date()
     if a.market.startswith("b") and a.market != "bj":
@@ -302,10 +328,14 @@ def main():
         latest_ok = year_ok(target_fy)
         dy_ok = dy is not None and dy >= a.min_dy
         miss_data = [yy for yy in years if jll[yy] is None or zfz[yy] is None or ocf[yy] is None]
+        row_divs = dict(divs.get(code) or {})
+        if per10:
+            row_divs[target_fy] = per10
         row = {"name": name, "code": r["SECUCODE"], "ticker": code,
                "board": r.get("BOARD_NAME") or "",
                "jll": jll, "zfz": zfz, "ocf": ocf, "dy": dy,
-               "price": price, "month_avg": None,
+               "divs": row_divs, "price": price, "price_cny": price_cny,
+               "month_avg": None, "dy5": None,
                "cap": round((r.get("TOTAL_MARKET_CAP") or 0) / 1e8, 1) or None,
                "pe": r.get("PE_TTM"), "pb": r.get("PB_MRQ")}
         if miss_data:
@@ -323,10 +353,15 @@ def main():
             if not dy_ok: why.append(f"股息率{dy}")
             rejected.append((row, "；".join(why)))
 
-    # 价格观察字段不参与筛选；只为通过/边缘候选取月线，避免对全量剔除池逐只请求。
+    # 价格与5年股息率观察字段不参与筛选；只处理通过/边缘候选。
     candidates = passed + [r for r, _ in edge]
     if candidates:
         tickers = [r["ticker"] for r in candidates]
+        try:
+            history_divs = dividends_batch(f"{history_years[0]}-01-01", tickers)
+        except Exception as e:
+            misses.append(f"候选五年分红: {e}")
+            history_divs = {}
         try:
             if a.market.startswith("b") and a.market != "bj":
                 month_avg = month_averages_b(tickers, date)
@@ -337,6 +372,15 @@ def main():
             month_avg = {}
         for r in candidates:
             r["month_avg"] = month_avg.get(r["ticker"])
+            r["divs"].update(history_divs.get(r["ticker"]) or {})
+            if a.market.startswith("b") and a.market != "bj":
+                for yy in history_years:
+                    if yy not in r["divs"]:
+                        time.sleep(0.08)
+                        r["divs"][yy] = div_sina_fy(r["ticker"], yy)
+            r["dy5"], _ = average_dividend_yield(
+                r["divs"], r["price_cny"], history_years
+            )
         missing_avg = [r["ticker"] for r in candidates if r["month_avg"] is None]
         if missing_avg:
             sample = ",".join(missing_avg[:10])
@@ -355,12 +399,16 @@ def main():
         if code.startswith(("200", "201")):
             return f"{value:.3f} HKD"
         return f"{value:.2f} CNY"
+    def fdy5(r):
+        if r.get("dy5") is None:
+            return "—"
+        return f"{r['dy5']:.2f}%"
     def line(r):
         return (f"| {r['name']} | {r['code']} | {r['board']} | {f3(r['jll'],'%')} | {f3(r['zfz'],'%')} "
                 f"| {f3(r['ocf'])} | {r['dy'] if r['dy'] is not None else '—'}% "
-                f"| {fprice(r, 'price')} | {fprice(r, 'month_avg')} | {r['cap'] or '—'} "
+                f"| {fdy5(r)} | {fprice(r, 'price')} | {fprice(r, 'month_avg')} | {r['cap'] or '—'} "
                 f"| {round(r['pe'],1) if r['pe'] else '—'} | {round(r['pb'],2) if r['pb'] else '—'} |")
-    H = "| 标的 | 代码 | 板块 | 净利率 | 负债率 | 每股经营现金流 | 股息率 | 当前股价 | 当月平均股价 | 市值(亿) | PE | PB |\n|---|---|---|---|---|---|---|---|---|---|---|---|"
+    H = "| 标的 | 代码 | 板块 | 净利率 | 负债率 | 每股经营现金流 | 股息率 | 近5年平均股息率(按现价) | 当前股价 | 当月平均股价 | 市值(亿) | PE | PB |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|"
     L = [f"# 快速筛选（{a.market}{'/'+a.board if a.board else ''}，财年 {'/'.join(years)}，行情日 {date_note}）",
          f"阈值：净利率≥{a.min_jll}% / 负债率≤{a.max_zcfzl}% / 每股经营现金流>{a.min_ocf}元 / 股息率≥{a.min_dy}%",
          f"扫描 {len(uni)} 只 → 通过 {len(passed)} + 边缘 {len(edge)} + 剔除 {len(rejected)}\n",
@@ -373,7 +421,7 @@ def main():
     L += [f"| {r['name']} | {r['code']} | {why} |" for r, why in rejected[:200]]
     if len(rejected) > 200:
         L.append(f"| … | … | 其余 {len(rejected)-200} 只略 |")
-    L += ["", f"口径注记：净利率/负债率/每股经营现金流=东财 F10 年报主指标；股息率=目标财年({target_fy})宣告每10股派息合计(人民币)÷10÷人民币折算最新价（沪B美元×USDCNY≈{usd:.4f}、深B港币×HKDCNY≈{hkd:.4f}，新浪即期；预案未除权亦计入；B股分红东财未覆盖者用新浪除息年归属口径）。当前股价=A股/北证为东财最新交易日收盘价、B股为新浪 hq 最新价；当月平均股价=该最新行情日所属自然月截至该日的日收盘价算术平均，A股/北证来自东财 RPT_VALUEANALYSIS_DET、B股来自新浪日线；价格列保留报价币种（A股/北证 CNY、沪B USD、深B HKD），不参与四维筛选。PE/PB=接口披露值搬运（B股无此字段）。"
+    L += ["", f"口径注记：净利率/负债率/每股经营现金流=东财 F10 年报主指标；股息率=目标财年({target_fy})宣告每10股派息合计(人民币)÷10÷人民币折算最新价（沪B美元×USDCNY≈{usd:.4f}、深B港币×HKDCNY≈{hkd:.4f}，新浪即期；预案未除权亦计入；B股分红东财未覆盖者用新浪除息年归属口径）。近5年平均股息率=({'/'.join(history_years)}每股现金分红之和÷5)÷当前人民币折算价；分红源无记录按0，故新上市不足5年的公司也按完整五年窗口保守计0。当前股价=A股/北证为东财最新交易日收盘价、B股为新浪 hq 最新价；当月平均股价=该最新行情日所属自然月截至该日的日收盘价算术平均，A股/北证来自东财 RPT_VALUEANALYSIS_DET、B股来自新浪日线。价格及近5年平均股息率均不参与四维筛选。PE/PB=接口披露值搬运（B股无此字段）。"
           , "纪律：本清单为机械阈值过滤的候选池，不含任何贵贱/未来判断；深度研究衔接 financial-facts → lixinger-valuation → value-investing-gate。"]
     if misses:
         L.append(f"WARN: {'; '.join(misses)}")
